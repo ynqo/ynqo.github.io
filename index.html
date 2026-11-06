@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Atwi Bot Sender :D</title>
+<title>Atwi WebHook Sender:D</title>
 <style>
 body {
     background-color: #e8ecf2;
@@ -77,66 +77,33 @@ button:hover {
 </style>
 </head>
 <body>
-<div class="header">Atwi Bot Sender :o</div>
+<div class="header">Atwi Webhook Sender:o</div>
 <div class="container">
-<h2>Send Message by Channel Name</h2>
-<label>Bot Token:</label>
-<input type="text" id="botToken" placeholder="Paste Discord Bot Token here...">
-<label>Guild ID (Server ID):</label>
-<input type="text" id="guildId" placeholder="Paste Server ID here...">
-<label>Channel Name:</label>
-<input type="text" id="channelName" placeholder="e.g. general">
-<label>Message:</label>
+<h2>Send Discord Message</h2>
+<label>Webhook URL:</label>
+<input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
+<label>Message (Use &lt;@USER_ID&gt; for mentions):</label>
 <textarea id="messageContent" placeholder="Type your message here..."></textarea>
-<button id="sendBtn">Send Message</button>
+<button id="sendBtn">Send</button>
 <div id="status"></div>
 </div>
 <script>
 const sendBtn = document.getElementById('sendBtn');
 sendBtn.addEventListener('click', async () => {
-    const token = document.getElementById('botToken').value.trim();
-    const guildId = document.getElementById('guildId').value.trim();
-    const targetName = document.getElementById('channelName').value.trim().toLowerCase();
+    const url = document.getElementById('webhookUrl').value.trim();
     const msg = document.getElementById('messageContent').value;
     const status = document.getElementById('status');
-    if (!token || !guildId || !targetName || !msg.trim()) {
+    if (!url || !msg.trim()) {
         status.style.color = 'red';
         status.innerText = 'Please fill in all fields first!';
         return;
     }
     status.style.color = '#333';
-    status.innerText = 'Connecting bot and searching channel...';
+    status.innerText = 'Sending message...';
     try {
-        const channelsRes = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bot ${token}`
-            }
-        });
-        if (!channelsRes.ok) {
-            status.style.color = 'red';
-            status.innerText = 'Failed to connect bot or invalid Guild ID/Token.';
-            return;
-        }
-        const channels = await channelsRes.json();
-        let foundChannelId = null;
-        for (const ch of channels) {
-            if (ch.name.toLowerCase() === targetName && ch.type === 0) {
-                foundChannelId = ch.id;
-                break;
-            }
-        }
-        if (!foundChannelId) {
-            status.style.color = 'red';
-            status.innerText = 'Channel name not found in this server!';
-            return;
-        }
-        status.style.color = '#333';
-        status.innerText = 'Sending message...';
-        const msgRes = await fetch(`https://discord.com/api/v10/channels/${foundChannelId}/messages`, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': `Bot ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ 
@@ -144,16 +111,16 @@ sendBtn.addEventListener('click', async () => {
                 allowed_mentions: { parse: ["users", "roles", "everyone"] }
             })
         });
-        if (msgRes.ok) {
+        if (response.ok) {
             status.style.color = 'green';
             status.innerText = 'Message sent successfully!';
         } else {
             status.style.color = 'red';
-            status.innerText = 'Failed to send message to the channel.';
+            status.innerText = 'Failed to send. Please check your URL.';
         }
     } catch (error) {
         status.style.color = 'red';
-        status.innerText = 'Network or CORS connection error.';
+        status.innerText = 'Network connection error.';
     }
 });
 </script>
