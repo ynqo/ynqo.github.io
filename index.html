@@ -82,7 +82,7 @@ button:hover {
 <h2>Send Discord Message</h2>
 <label>Webhook URL:</label>
 <input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
-<label>Message:</label>
+<label>Message (Use &lt;@USER_ID&gt; for mentions):</label>
 <textarea id="messageContent" placeholder="Type your message here..."></textarea>
 <button id="sendBtn">Send</button>
 <div id="status"></div>
@@ -91,9 +91,9 @@ button:hover {
 const sendBtn = document.getElementById('sendBtn');
 sendBtn.addEventListener('click', async () => {
     const url = document.getElementById('webhookUrl').value.trim();
-    const msg = document.getElementById('messageContent').value.trim();
+    const msg = document.getElementById('messageContent').value;
     const status = document.getElementById('status');
-    if (!url || !msg) {
+    if (!url || !msg.trim()) {
         status.style.color = 'red';
         status.innerText = 'Please fill in all fields first!';
         return;
@@ -106,7 +106,10 @@ sendBtn.addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content: msg })
+            body: JSON.stringify({ 
+                content: msg,
+                allowed_mentions: { parse: ["users", "roles", "everyone"] }
+            })
         });
         if (response.ok) {
             status.style.color = 'green';
