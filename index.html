@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roblox - Discord Webhook Tool</title>
+<style>
+body {
+    background-color: #e8ecf2;
+    font-family: Tahoma, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #111;
+}
+.header {
+    background: linear-gradient(to bottom, #1c4d7c, #0d2b4a);
+    color: white;
+    padding: 12px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 3px solid #06182c;
+}
+.container {
+    width: 450px;
+    margin: 40px auto;
+    background: #ffffff;
+    border: 1px solid #7394b2;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+h2 {
+    color: #0d2b4a;
+    font-size: 16px;
+    margin-top: 0;
+    border-bottom: 1px solid #d0dbe6;
+    padding-bottom: 8px;
+}
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
+}
+input[type="text"], textarea {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    border: 1px solid #7394b2;
+    background: #fff;
+    box-sizing: border-box;
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 12px;
+}
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+button {
+    margin-top: 15px;
+    background: linear-gradient(to bottom, #5a9ed8, #2269a8);
+    color: white;
+    border: 1px solid #144470;
+    padding: 6px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 12px;
+}
+button:hover {
+    background: linear-gradient(to bottom, #6ab0f2, #1c5d96);
+}
+#status {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="header">Roblox Webhook Tool (2008 Edition)</div>
+<div class="container">
+<h2>Send Discord Message</h2>
+<label>Webhook URL:</label>
+<input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
+<label>Message:</label>
+<textarea id="messageContent" placeholder="Type your message here..."></textarea>
+<button id="sendBtn">Send</button>
+<div id="status"></div>
+</div>
+<script>
+const sendBtn = document.getElementById('sendBtn');
+sendBtn.addEventListener('click', async () => {
+    const url = document.getElementById('webhookUrl').value.trim();
+    const msg = document.getElementById('messageContent').value.trim();
+    const status = document.getElementById('status');
+    if (!url || !msg) {
+        status.style.color = 'red';
+        status.innerText = 'Please fill in all fields first!';
+        return;
+    }
+    status.style.color = '#333';
+    status.innerText = 'Sending message...';
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: msg })
+        });
+        if (response.ok) {
+            status.style.color = 'green';
+            status.innerText = 'Message sent successfully!';
+        } else {
+            status.style.color = 'red';
+            status.innerText = 'Failed to send. Please check your URL.';
+        }
+    } catch (error) {
+        status.style.color = 'red';
+        status.innerText = 'Network connection error.';
+    }
+});
+</script>
+</body>
+</html>
